@@ -46,6 +46,8 @@ dependencies {
     implementation 'id.zelory:compressor:2.1.0'
     implementation 'com.github.mancj:MaterialSearchBar:0.7.5'
     implementation 'com.github.rahimlis:badgedtablayout:v1.2'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.firebaseui:firebase-ui-firestore:7.2.0'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'

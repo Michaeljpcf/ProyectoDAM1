@@ -6,15 +6,17 @@ public class User {
     private String userName;
     private String cel;
     private String image;
+    private String info;
 
     public User() {
     }
 
-    public User(String id, String userName, String cel, String image) {
+    public User(String id, String userName, String cel, String image, String info) {
         this.id = id;
         this.userName = userName;
         this.cel = cel;
         this.image = image;
+        this.info = info;
     }
 
     public String getId() {
@@ -47,5 +49,13 @@ public class User {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 }
