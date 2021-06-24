@@ -7,7 +7,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,6 +35,9 @@ import com.example.proyectodam1.providers.UsersProvider;
 import com.example.proyectodam1.utils.AppBackgroundHelper;
 import com.example.proyectodam1.utils.RelativeTime;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.fxn.pix.Options;
+import com.fxn.pix.Pix;
+import com.fxn.utility.PermUtil;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -40,6 +47,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
@@ -64,6 +72,8 @@ public class ChatActivity extends AppCompatActivity {
     EditText mEditTextMessage;
     ImageView mImageViewSend;
 
+    ImageView mImageViewSelectPictures;
+
     MessagesAdapter mAdapter;
     RecyclerView mRecyclerViewMessage;
     LinearLayoutManager mLinearLayoutManager;
@@ -73,6 +83,9 @@ public class ChatActivity extends AppCompatActivity {
     ListenerRegistration mListenerChat;
 
     User mUser;
+
+    Options mOptions;
+    ArrayList<String> mReturnValues = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,15 +102,27 @@ public class ChatActivity extends AppCompatActivity {
 
         mEditTextMessage = findViewById(R.id.editTextMessage);
         mImageViewSend = findViewById(R.id.imageViewSend);
+        mImageViewSelectPictures = findViewById(R.id.imageViewSelectPicture);
 
         mRecyclerViewMessage = findViewById(R.id.rvMessage);
         mLinearLayoutManager = new LinearLayoutManager(ChatActivity.this);
         mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerViewMessage.setLayoutManager(mLinearLayoutManager);
 
+        mOptions = Options.init()
+                .setRequestCode(100)                                           //Request code for activity results
+                .setCount(5)                                                   //Number of images to restict selection count
+                .setFrontfacing(false)                                         //Front Facing camera on start
+                .setPreSelectedUrls(mReturnValues)
+                .setExcludeVideos(true)
+                .setSpanCount(4)                                               //Span count for gallery min 1 & max 5
+                .setMode(Options.Mode.All)                                     //Option to select only pictures or videos or both
+                .setVideoDurationLimitinSeconds(0)                            //Duration for video recording
+                .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT)     //Orientaion
+                .setPath("/pix/images");
+
         showChatToolbar(R.layout.chat_toolbar);
         gerUserInfo();
-        //createChat();
 
         checkIfExistsChat();
         setWriting();
@@ -105,7 +130,13 @@ public class ChatActivity extends AppCompatActivity {
         mImageViewSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createMessage();
+            }
+        });
+
+        mImageViewSelectPictures.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startPix();
             }
         });
 
@@ -157,6 +188,9 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        if(mAdapter != null){
+            mAdapter.stopListening();
+        }
         AppBackgroundHelper.online(ChatActivity.this, false);
         mAdapter.stopListening();
     }
@@ -168,6 +202,11 @@ public class ChatActivity extends AppCompatActivity {
             mListenerChat.remove();
         }
     }
+
+    private void startPix() {
+        Pix.start(ChatActivity.this, mOptions);
+    }
+
 
     private void createMessage() {
         String textMessage = mEditTextMessage.getText().toString();
@@ -352,7 +391,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private  void showChatToolbar(int resource ){
+    private  void showChatToolbar(int resource ) {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -368,12 +407,33 @@ public class ChatActivity extends AppCompatActivity {
         mCircleImageUser = view.findViewById(R.id.circleImageUser);
         mTextViewOnline = view.findViewById(R.id.tvOnline);
 
-        mImageViewBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        mImageViewBack.setOnClickListener(new View.OnClickListener() { public void onClick(View v) {
+                finish(); } });
     }
 
-}
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+            if (resultCode == Activity.RESULT_OK && requestCode == 100) {
+                mReturnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS);
+                Intent intent = new Intent(ChatActivity.this, ConfirmImageSendActivity.class);
+                intent.putExtra("data", mReturnValues);
+                startActivity(intent);
+            }
+        }
+        @Override
+        public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            switch (requestCode) {
+                case PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS: {
+                    // If request is cancelled, the result arrays are empty.
+                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Pix.start(ChatActivity.this, mOptions);
+                    } else {
+                        Toast.makeText(ChatActivity.this, "Debes conceder los permisos para acceder a la cámara", Toast.LENGTH_LONG).show();
+                    }
+                    return;
+                }
+            }
+        }
+    }

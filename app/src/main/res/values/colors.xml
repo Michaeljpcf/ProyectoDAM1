@@ -5,6 +5,7 @@
     <color name="colorAccent">#8FA1AF</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#202020</color>
+    <color name="colorFullBlack">#000000</color>
     <color name="colorGray">#D5D5D5</color>
     <color name="colorGrayLigth">#EAEAEA</color>
     <color name="colorGrayDark">#B3B3B3</color>
