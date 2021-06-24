@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proyectodam1.R;
 import com.example.proyectodam1.activities.ChatActivity;
+import com.example.proyectodam1.models.Chat;
 import com.example.proyectodam1.models.User;
 import com.example.proyectodam1.providers.AuthProvider;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -21,30 +23,21 @@ import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ContactsAdapter extends FirestoreRecyclerAdapter<User, ContactsAdapter.ViewHolder> {
+public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.ViewHolder> {
 
     Context context;
     AuthProvider authProvider;
 
 
-    public ContactsAdapter(FirestoreRecyclerOptions options, Context context) {
+    public ChatsAdapter(FirestoreRecyclerOptions options, Context context) {
         super(options);
         this.context = context;
         authProvider = new AuthProvider();
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull final User user) {
-
-       if (user.getId().equals(authProvider.getId())){
-           RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
-           param.height = 0;
-           param.width = LinearLayout.LayoutParams.MATCH_PARENT;
-           param.topMargin = 0;
-           param.bottomMargin = 0;
-           holder.itemView.setVisibility(View.VISIBLE);
-       }
-
+    protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull final Chat chat) {
+    /*
         holder.textViewInfo.setText(user.getInfo());
         holder.textViewUserName.setText(user.getUserName());
         if (user.getImage() != null){
@@ -65,7 +58,7 @@ public class ContactsAdapter extends FirestoreRecyclerAdapter<User, ContactsAdap
                 goToChatActivity(user.getId());
             }
         });
-
+        */
     }
 
     private void goToChatActivity(String id) {
@@ -77,15 +70,17 @@ public class ContactsAdapter extends FirestoreRecyclerAdapter<User, ContactsAdap
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_contacts, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_chats, parent, false);
         return new ViewHolder(view);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView textViewUserName;
-        TextView textViewInfo;
+        TextView textViewLastMensage;
+        TextView textViewTimestamp;
         CircleImageView circleImageUser;
+        ImageView imageViewCheck;
         View myView;
 
         public ViewHolder(View view) {
@@ -93,8 +88,10 @@ public class ContactsAdapter extends FirestoreRecyclerAdapter<User, ContactsAdap
             myView = view;
 
             textViewUserName = view.findViewById(R.id.tvUserName);
-            textViewInfo = view.findViewById(R.id.tvInfo);
+            textViewLastMensage = view.findViewById(R.id.tvLastMensage);
+            textViewTimestamp = view.findViewById(R.id.tvTimestamp);
             circleImageUser = view.findViewById(R.id.circleImageUser);
+            imageViewCheck = view.findViewById(R.id.imageViewCheck);
 
         }
 
