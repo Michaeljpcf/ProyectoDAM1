@@ -23,6 +23,7 @@ import com.example.proyectodam1.models.User;
 import com.example.proyectodam1.providers.AuthProvider;
 import com.example.proyectodam1.providers.ImageProvider;
 import com.example.proyectodam1.providers.UsersProvider;
+import com.example.proyectodam1.utils.AppBackgroundHelper;
 import com.example.proyectodam1.utils.MyToolbar;
 import com.fxn.pix.Options;
 import com.fxn.pix.Pix;
@@ -121,6 +122,18 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         getUserInfo();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        AppBackgroundHelper.online(ProfileActivity.this, true);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AppBackgroundHelper.online(ProfileActivity.this, false);
     }
 
     @Override

@@ -7,16 +7,20 @@ public class User {
     private String cel;
     private String image;
     private String info;
+    private long lastConnect;
+    private boolean online;
 
     public User() {
     }
 
-    public User(String id, String userName, String cel, String image, String info) {
+    public User(String id, String userName, String cel, String image, String info, long lastConnect, boolean online) {
         this.id = id;
         this.userName = userName;
         this.cel = cel;
         this.image = image;
         this.info = info;
+        this.lastConnect = lastConnect;
+        this.online = online;
     }
 
     public String getId() {
@@ -57,5 +61,21 @@ public class User {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public long getLastConnect() {
+        return lastConnect;
+    }
+
+    public void setLastConnect(long lastConnect) {
+        this.lastConnect = lastConnect;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 }

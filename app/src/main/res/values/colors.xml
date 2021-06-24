@@ -10,4 +10,6 @@
     <color name="colorGrayDark">#B3B3B3</color>
     <color name="colorOrange">#CF5A0C</color>
     <color name="colorPurple">#62138C</color>
+    <color name="colorGreenLight">#DCF8C6</color>
+    <color name="colorGreenAccent">#20C65A</color>
 </resources>

@@ -16,12 +16,15 @@ import com.example.proyectodam1.fragments.ContactsFragment;
 import com.example.proyectodam1.fragments.PhotoFragment;
 import com.example.proyectodam1.fragments.StatusFragment;
 import com.example.proyectodam1.providers.AuthProvider;
+import com.example.proyectodam1.providers.UsersProvider;
+import com.example.proyectodam1.utils.AppBackgroundHelper;
 import com.google.android.material.tabs.TabLayout;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
 public class HomeActivity extends AppCompatActivity implements MaterialSearchBar.OnSearchActionListener {
 
     AuthProvider mAuthProvider;
+    UsersProvider mUsersProvider;
     MaterialSearchBar mSearchBar;
 
     TabLayout mTabLayout;
@@ -51,6 +54,8 @@ public class HomeActivity extends AppCompatActivity implements MaterialSearchBar
         mStatusFragment = new StatusFragment();
         mPhotoFragment = new PhotoFragment();
 
+        mUsersProvider = new UsersProvider();
+
         adapter.addFragment(mPhotoFragment, "");
         adapter.addFragment(mChatsFragments, "CHATS");
         adapter.addFragment(mStatusFragment, "ESTADOS");
@@ -79,6 +84,18 @@ public class HomeActivity extends AppCompatActivity implements MaterialSearchBar
         });
 
         mAuthProvider = new AuthProvider();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        AppBackgroundHelper.online(HomeActivity.this, true);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AppBackgroundHelper.online(HomeActivity.this, false);
     }
 
     private void goToProfile() {
